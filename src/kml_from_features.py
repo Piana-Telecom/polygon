@@ -51,6 +51,7 @@ def main():
 
         kml.save(f"ces_query_{now}.kml")
         print(f"ExecTime : {(time.time() - st)/60} min")
+        print(f"Arquivo KML gerado com sucesso: ces_query_{now}.kml")
     else:
         print("Erro ao carregar o arquivo.")
 
