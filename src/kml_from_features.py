@@ -43,7 +43,13 @@ def main():
 
         for _, feature in df.iterrows():
             new_point = kml.newpoint()
-            new_point.name = feature["n_ps"]
+
+            # Corrigir o nome para evitar valores float com .0
+            name_value = feature["n_ps"]
+            if isinstance(name_value, float) and name_value.is_integer():
+                name_value = int(name_value)  # Converte float para inteiro se não houver fração
+
+            new_point.name = str(name_value)  # Garante que seja string
             new_point.coords = [(feature["wgs_lon"], feature["wgs_lat"])]
 
         

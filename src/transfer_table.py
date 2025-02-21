@@ -41,6 +41,8 @@ def format_xlsx(file, cnpj):
     ]
 
     df_resultado = df_filtrado[["n_ps", "wgs_lat", "wgs_lon"]]
+    
+    df_resultado["n_ps"] = pd.to_numeric(df_resultado["n_ps"], errors="coerce").fillna(0).astype(int)
 
     return df_resultado
 
