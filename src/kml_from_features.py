@@ -10,11 +10,10 @@ OUTPUT_FOLDER = "KML_output"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 
-# Função para selecionar o arquivo .xlsx
 def get_xlsx():
-    all_files = glob.glob("*.xlsx")  # Busca todos os arquivos .xlsx no diretório
+    all_files = glob.glob("planilha_filtrada*.xlsx")  
     if not all_files:
-        print("Nenhum arquivo .xlsx encontrado.")
+        print("Nenhum arquivo .xlsx com prefixo 'planilha_filtrada' encontrado.")
         return None
 
     print("Escolha o arquivo .xlsx desejado:")
@@ -32,17 +31,14 @@ def get_xlsx():
             print("Entrada inválida! Digite um número válido.")
 
 
-# Função principal
 def main():
     # Escolher o arquivo .xlsx
     arquivo = get_xlsx()
 
     if arquivo:
-        # Carregar o arquivo .xlsx escolhido
         df = pd.read_excel(arquivo)
         print(df)
 
-        # Iniciar o arquivo KML
         kml = skml.Kml()
 
         for _, feature in df.iterrows():
@@ -50,9 +46,8 @@ def main():
             new_point.name = feature["n_ps"]
             new_point.coords = [(feature["wgs_lon"], feature["wgs_lat"])]
 
-        # Gerar nome do arquivo KML com timestamp
-        now = dt.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        output_path = os.path.join(OUTPUT_FOLDER, f"ces_query_{now}.kml")
+        
+        output_path = os.path.join(OUTPUT_FOLDER, f"ces_query_{arquivo}.kml")
 
         kml.save(output_path)
 

@@ -1,12 +1,11 @@
 import pandas as pd
 import glob
+import re  
 
-
-# Função para selecionar o arquivo .xlsx
 def get_xlsx():
-    all_files = glob.glob("*.xlsx")  # Busca todos os arquivos .xlsx no diretório
+    all_files = glob.glob("CES_ownership*.xlsx")  
     if not all_files:
-        print("Nenhum arquivo .xlsx encontrado.")
+        print("Nenhum arquivo .xlsx com o prefixo 'CES_ownership' encontrado.")
         return None
 
     print("Escolha o arquivo .xlsx desejado:")
@@ -24,15 +23,21 @@ def get_xlsx():
             print("Entrada inválida! Digite um número válido.")
 
 
-# Função para filtrar a planilha
+def format_cnpj(cnpj):
+    
+    return re.sub(r'\D', '', cnpj)
+
 def format_xlsx(file, cnpj):
     if file is None:
         return None
 
+    # Formatar o CNPJ informado pelo usuário
+    cnpj_formatado = format_cnpj(cnpj)
+
     source_df = pd.read_excel(file)
 
     df_filtrado = source_df[
-        source_df["owner_list"].apply(lambda x: cnpj in str(x).split(","))
+        source_df["owner_list"].apply(lambda x: cnpj_formatado in str(x).split(","))
     ]
 
     df_resultado = df_filtrado[["n_ps", "wgs_lat", "wgs_lon"]]
