@@ -1,6 +1,5 @@
 import simplekml as skml
 import pandas as pd
-import datetime as dt
 import time
 import glob
 import os
@@ -11,14 +10,15 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 
 def get_xlsx():
-    all_files = glob.glob("planilha_filtrada*.xlsx")  
+    all_files = glob.glob(os.path.join("FILTRADA_output", "filtrada*.xlsx"))  
     if not all_files:
-        print("Nenhum arquivo .xlsx com prefixo 'planilha_filtrada' encontrado.")
+        print("Nenhum arquivo .xlsx com prefixo 'filtrada' encontrado.")
         return None
 
     print("Escolha o arquivo .xlsx desejado:")
     for i, file in enumerate(all_files, start=1):
-        print(f"{i}. {file}")
+        # Mostrando apenas o nome do arquivo, sem o caminho
+        print(f"{i}. {os.path.basename(file)}")
 
     while True:
         try:
@@ -52,8 +52,12 @@ def main():
             new_point.name = str(name_value)  # Garante que seja string
             new_point.coords = [(feature["wgs_lon"], feature["wgs_lat"])]
 
-        
-        output_path = os.path.join(OUTPUT_FOLDER, f"ces_query_{arquivo}.kml")
+        # Extrair apenas o nome base para gerar o arquivo KML corretamente
+        nome_base = os.path.basename(arquivo)
+        data_hora = nome_base.split("_")[-2:]  # Pega a data e hora no final
+        nome_kml = f"ces_query_input_{'-'.join(data_hora).replace('.xlsx', '')}.kml"
+
+        output_path = os.path.join(OUTPUT_FOLDER, nome_kml)
 
         kml.save(output_path)
 

@@ -8,6 +8,11 @@ from utils import batch_coords_trasform, polygon_from_kml
 from ces_requests import query_ces_postes_transf
 import time
 
+OUTPUT_FOLDER = "OWNERSHIP_output"
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+
+
 if __name__ == "__main__":
     kml_files = [f for f in os.listdir('.') if f.endswith('.kml')]
     
@@ -86,5 +91,6 @@ if __name__ == "__main__":
     df.insert(len(df.columns), "wgs_lon", lon, True)
     
     now = dt.datetime.now().strftime('%d-%m-%Y-%H-%M')
-    df.to_excel(f'CES_ownership_{file_name}_{now}.xlsx')
-    print(f'Arquivo salvo como CES_ownership_{file_name}_{now}.xlsx')
+    output_file = os.path.join(OUTPUT_FOLDER, f'CES_ownership_{file_name}_{now}.xlsx')
+    df.to_excel(output_file)
+    print(f'Arquivo salvo como {output_file}')
