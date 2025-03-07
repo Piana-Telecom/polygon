@@ -6,7 +6,6 @@ import os
 OUTPUT_FOLDER = "FILTRADA_output"
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-
 def get_xlsx():
     all_files = glob.glob(os.path.join("OWNERSHIP_output", "CES_ownership*.xlsx"))
     if not all_files:
@@ -27,22 +26,24 @@ def get_xlsx():
         except ValueError:
             print("Entrada inválida! Digite um número válido.")
 
-
 def format_cnpj(cnpj):
     return re.sub(r'\D', '', cnpj)
 
-
-def format_xlsx(file, cnpj):
+def format_xlsx(file, cnpj=None):
     if file is None:
         return None
 
-    cnpj_formatado = format_cnpj(cnpj)
-
     source_df = pd.read_excel(file)
 
-    df_filtrado = source_df[
-        source_df["owner_list"].apply(lambda x: cnpj_formatado in str(x).split(","))
-    ]
+    # Se o CNPJ for fornecido, filtra os dados
+    if cnpj:
+        cnpj_formatado = format_cnpj(cnpj)
+        df_filtrado = source_df[
+            source_df["owner_list"].apply(lambda x: cnpj_formatado in str(x).split(","))
+        ]
+    else:
+        # Se não houver CNPJ, não aplica filtro
+        df_filtrado = source_df
 
     df_resultado = df_filtrado[["n_ps", "wgs_lat", "wgs_lon"]]
 
@@ -50,24 +51,22 @@ def format_xlsx(file, cnpj):
 
     return df_resultado
 
-
 def main():
     arquivo = get_xlsx()
     if arquivo is None:
         return
 
-    cnpj_filtro = input("Digite o CNPJ para filtrar: ")
+    cnpj_filtro = input("Digite o CNPJ para filtrar (pressione Enter para não filtrar): ")
 
-    df_filtrado = format_xlsx(arquivo, cnpj_filtro)
+    df_filtrado = format_xlsx(arquivo, cnpj_filtro if cnpj_filtro else None)
 
     if df_filtrado is not None and not df_filtrado.empty:
         nome_saida = f"filtrada_{os.path.basename(arquivo)}"
         output_file = os.path.join(OUTPUT_FOLDER, nome_saida)
         df_filtrado.to_excel(output_file, index=False)
-        print(f"Planilha filtrada salva com sucesso em {output_file}!")
+        print(f"Planilha gerada com sucesso em {output_file}!")
     else:
-        print("Nenhum dado encontrado para o CNPJ especificado.")
-
+        print("Nenhum dado encontrado para o CNPJ especificado ou arquivo vazio.")
 
 if __name__ == "__main__":
     main()
